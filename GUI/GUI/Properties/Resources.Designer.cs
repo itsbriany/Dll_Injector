@@ -61,11 +61,29 @@ namespace GUI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to *.dll|*.*.
+        ///   Looks up a localized string similar to Dll Files|*.dll.
         /// </summary>
         internal static string DLL_File_Type {
             get {
                 return ResourceManager.GetString("DLL_File_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Injection Failed!.
+        /// </summary>
+        internal static string resx_injectionFailed {
+            get {
+                return ResourceManager.GetString("resx_injectionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Injection Successful!.
+        /// </summary>
+        internal static string resx_injectionSuccess {
+            get {
+                return ResourceManager.GetString("resx_injectionSuccess", resourceCulture);
             }
         }
         

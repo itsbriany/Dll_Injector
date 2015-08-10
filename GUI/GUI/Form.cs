@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
 using GUI.Properties;
 
@@ -8,6 +8,11 @@ namespace GUI
 {
     public partial class Form : System.Windows.Forms.Form
     {
+
+        private List<Target> _processes = new List<Target>();
+        private string _dll_path;
+        private int _selected_process;
+
         public Form()
         {
             InitializeComponent();
@@ -26,11 +31,13 @@ namespace GUI
 
             try
             {
-                Stream myStream = openFileDialog.OpenFile();
-                using (myStream)
-                {
-                    // Insert code to read the stream here.
-                }
+                //Stream myStream = openFileDialog.OpenFile();
+                SelectDllLabel.Text = openFileDialog.SafeFileName;
+
+                if (SelectDllLabel.Text == null) return;
+
+                _dll_path = openFileDialog.FileName;
+
             }
             catch (Exception ex)
             {
@@ -41,6 +48,9 @@ namespace GUI
         private void Form_Load(object sender, EventArgs e)
         {
             GetProcesses();
+            InjectionProgressBar.Visible = true;
+            InjectionProgressBar.Minimum = 0;
+            InjectionProgressBar.Maximum = 2;
         }
 
         private void GetProcesses()
@@ -49,13 +59,17 @@ namespace GUI
             var processes = Process.GetProcesses();
             foreach (var currentProcess in processes)
             {
-                ProcessListBox.Items.Add(currentProcess.ProcessName);
-                PidListBox.Items.Add(currentProcess.Id);
+                var targetProcess = new Target(currentProcess.ProcessName, currentProcess.Id);
+                ProcessListBox.Items.Add(targetProcess.Name);
+                PidListBox.Items.Add(targetProcess.Pid);
+                _processes.Add(targetProcess);
             }
         }
 
         private void RemoveProcesses()
         {
+            InjectionProgressBar.Value = 0;
+            _processes.Clear();
             for (var n = ProcessListBox.Items.Count - 1; n >= 0; --n)
             {
                 PidListBox.Items.RemoveAt(n);
@@ -65,15 +79,17 @@ namespace GUI
 
         private void SearchProcessesTextField_TextChanged(object sender, EventArgs e)
         {
-            var processName = searchProcessesTextBox.Text;
+            var processSearch = SearchProcessesTextBox.Text;
             RemoveProcesses();
             var processes = Process.GetProcesses();
             foreach (var currentProcess in processes)
             {
-                if (currentProcess.ToString().Contains(processName))
+                if (currentProcess.ToString().Contains(processSearch) || 
+                    currentProcess.Id.ToString().Contains(processSearch))
                 {
                     ProcessListBox.Items.Add(currentProcess.ProcessName);
                     PidListBox.Items.Add(currentProcess.Id);
+                    _processes.Add(new Target(currentProcess.ProcessName, currentProcess.Id));
                 }
             }
 
@@ -81,18 +97,51 @@ namespace GUI
 
         private void ProcessListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var processLabel = ProcessListBox.SelectedItem as string;
-            
-            var processes = Process.GetProcesses();
-            for (var i = 0; i < processes.Length; i++)
+            var selectedIndex = ProcessListBox.SelectedIndex;
+            PidListBox.SelectedIndex = selectedIndex;
+            try
             {
-                if (processes[i].ToString() == processLabel)
-                {
-                    PidListBox.SetSelected(i, true);
-                    InjectionStatusLabel.Text = PidListBox.SelectedItem as string;
-                }
+                SelectProcessLabel.Text = _processes[selectedIndex].Name + ' ' + '(' + 
+                    _processes[selectedIndex].Pid + ')';
+                _selected_process= _processes[selectedIndex].Pid;
+            }
+            catch (Exception)
+            {
+                // ignored
             }
         }
 
+        private void PidListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var selectedIndex = PidListBox.SelectedIndex;
+            ProcessListBox.SelectedIndex = selectedIndex;
+            try
+            {
+                SelectProcessLabel.Text = _processes[selectedIndex].Name + ' ' + '(' +
+                    _processes[selectedIndex].Pid + ')';
+                _selected_process = _processes[selectedIndex].Pid;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+
+        private void InjectButton_Click(object sender, EventArgs e)
+        {
+            InjectionProgressBar.PerformStep();
+            if (Injector.InjectDll(_selected_process))
+            {
+                InjectionStatusLabel.Text = Resources.resx_injectionSuccess;
+                InjectionProgressBar.PerformStep();
+                return;
+            }
+            InjectionStatusLabel.Text = Resources.resx_injectionFailed;
+        }
+
+        private void SearchProcessesTextBox_Enter(object sender, EventArgs e)
+        {
+            SearchProcessesTextBox.Text = "";
+        }
     }
 }

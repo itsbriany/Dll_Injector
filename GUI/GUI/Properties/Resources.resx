@@ -122,7 +122,13 @@
     <comment>Omits an error when reading a DLL file from disk</comment>
   </data>
   <data name="DLL_File_Type" xml:space="preserve">
-    <value>*.dll|*.*</value>
+    <value>Dll Files|*.dll</value>
     <comment>Selects the file type extension for DLL</comment>
+  </data>
+  <data name="resx_injectionFailed" xml:space="preserve">
+    <value>Injection Failed!</value>
+  </data>
+  <data name="resx_injectionSuccess" xml:space="preserve">
+    <value>Injection Successful!</value>
   </data>
 </root>
