@@ -1,4 +1,5 @@
 #include "NativeInjector.h"
+#include "LoadLibraryR.h"
 #include <consoleapi.h>
 #include <string>
 
@@ -8,7 +9,10 @@ NativeInjector::NativeInjector(DWORD processId, LPCSTR dll) :
 	_charsWritten(nullptr),
 	_processId(processId),
 	_dll(dll),
-	_bytesInjected(0)
+	_bytesInjected(0),
+	_fullDllPath(nullptr),
+	_hProcess(nullptr),
+	_lpBuffer(nullptr)
 {
 	// Allocate memory for a new console
 	AllocConsole();
@@ -34,7 +38,7 @@ bool NativeInjector::inject()
 bool NativeInjector::injectDll()
 {
 	// Open the victim process
-	HANDLE hProcess = OpenProcess(PROCESS_CREATE_THREAD | 
+	_hProcess = OpenProcess(PROCESS_CREATE_THREAD | 
 		PROCESS_QUERY_INFORMATION |
 		PROCESS_VM_OPERATION | 
 		PROCESS_VM_READ |
@@ -42,7 +46,7 @@ bool NativeInjector::injectDll()
 		FALSE,
 		_processId);
 
-	if (hProcess == nullptr)
+	if (_hProcess == nullptr)
 	{
 		const char *ATTACHED_MESSAGE = "Error could not attach to process!\n";
 		WriteConsoleA(_stdOut, ATTACHED_MESSAGE, strlen(ATTACHED_MESSAGE), _charsWritten, nullptr);
@@ -51,7 +55,7 @@ bool NativeInjector::injectDll()
 	}
 
 	// Allocate memory for the DLL we are injecting
-	if (writeMemory(hProcess)) return true;
+	if (writeMemory(_hProcess)) return true;
 
 	return false;
 }
@@ -64,8 +68,10 @@ bool NativeInjector::writeMemory(HANDLE hProcess)
 	char *fileExt[BUFSIZE];
 	DWORD pathSize = GetFullPathNameA(_dll, BUFSIZE, fullPath, fileExt);
 	std::string message("Path to DLL: ");
-	message.append(fullPath);
+	_fullDllPath = fullPath;
+	message.append(_fullDllPath);
 	OutputDebugStringA(message.c_str());
+	
 	
 
 	// Get the full path for the DLL
@@ -98,7 +104,6 @@ bool NativeInjector::writeMemory(HANDLE hProcess)
 	SIZE_T dllSize = GetFileSize(dllFile, nullptr); 
 
 	// Allocate the virtual memory
-	
 	LPVOID lpDllBaseAddr = VirtualAllocEx(hProcess,
 		nullptr,
 		dllSize,
@@ -106,35 +111,70 @@ bool NativeInjector::writeMemory(HANDLE hProcess)
 		PAGE_EXECUTE_READWRITE);
 
 	// Write to the virtual memory we just allocated
-	LPVOID lpBuffer = HeapAlloc(GetProcessHeap(),
+	_lpBuffer = HeapAlloc(GetProcessHeap(),
 		HEAP_GENERATE_EXCEPTIONS|HEAP_ZERO_MEMORY,
 		dllSize);
 	DWORD bytesRead;
 
-	if (ReadFile(dllFile, lpBuffer, dllSize, &bytesRead, nullptr) == false)
+	if (ReadFile(dllFile, _lpBuffer, dllSize, &bytesRead, nullptr) == false)
 	{
 		MessageBoxA(nullptr, "Error cannot read dll!", "Error!", MB_OK + MB_ICONERROR);
 		return false;
 	}
-
-	if (WriteProcessMemory(hProcess, lpDllBaseAddr, lpBuffer, dllSize, &_bytesInjected) == false)
+	if (WriteProcessMemory(hProcess, lpDllBaseAddr, _lpBuffer, dllSize, &_bytesInjected) == false)
 	{
 	  MessageBoxA(nullptr, "Error cannot WriteProcessMemory!", "Error!", MB_OK + MB_ICONERROR);
 	  return false;
 	}
 	
+	// Run the function from the dll
+	if (runDll()) return true;
+
 	return true;
 }
 
-bool NativeInjector::copyDllPath()
+bool __cdecl NativeInjector::runDll()
 {
-	return false;
+	// Get the address for LoadLibraryA so that the injected process can load our dll
+	/*FARPROC lpLoadLibraryAddress = GetProcAddress(LoadLibraryA("kernel32.dll"), "LoadLibraryA");
+	if (lpLoadLibraryAddress == nullptr)
+	{
+		MessageBoxA(nullptr, "Error could not find address of LoadLibraryA in kernel32.dll",
+			"Error!", MB_OK + MB_ICONERROR);
+		return false;
+	}*/
+
+	DWORD lpLoadLibraryAddress = GetReflectiveLoaderOffset(_lpBuffer);
+
+	if (lpLoadLibraryAddress == 0)
+	{
+		MessageBoxA(nullptr, "Error could not find the address of the loaded dll!",
+			"Error!", MB_OK + MB_ICONERROR);
+		return false;
+	}
+
+	// Launch a thread calling LoadLibraryA to get the proper offset to the function from
+	// our dll we wish to call
+	/*HANDLE remoteThread = CreateRemoteThread(_hProcess, 
+		nullptr,
+		0,
+		);*/
+	return true;
 }
 
-bool NativeInjector::runDll()
-{
-	return false;
-}
+//void compileThis()
+//{
+//	LPVOID buffer = HeapAlloc(GetProcessHeap(),
+//		HEAP_GENERATE_EXCEPTIONS | HEAP_ZERO_MEMORY,
+//		100);
+//	DWORD lpLoadLibraryAddress = GetReflectiveLoaderOffset(buffer);
+//
+//	if (lpLoadLibraryAddress == 0)
+//	{
+//		MessageBoxA(nullptr, "Error could not find the address of the loaded dll!",
+//			"Error!", MB_OK + MB_ICONERROR);
+//	}
+//}
 
 extern "C" __declspec(dllexport) void inject(DWORD processId, LPCSTR dll)
 {

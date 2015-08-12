@@ -24,6 +24,7 @@ public:
 	SIZE_T getBytesInjected() const { return _bytesInjected; }
 	void setBytesInjected(SIZE_T val) { _bytesInjected = val; }
 
+	
 private:
 
 	//************************************
@@ -39,22 +40,18 @@ private:
 	bool writeMemory(HANDLE hProcess);
 
 	//************************************
-	// Returns: true if The DLL path was copied into the process's memory and the
-	// appropriate memory addresses were determine
-	//************************************
-	bool copyDllPath();
-
-	//************************************
 	// Returns:  true if the DLL was successfully executed
 	//************************************
-	bool runDll();
-
+	bool __cdecl runDll();
 
 	HANDLE _stdOut;			// A handle to stdout
 	LPDWORD _charsWritten;	// The number of chars written
 	DWORD _processId;		// The victim process
-	LPCSTR _dll;			// The DLL that will be injected
-	SIZE_T _bytesInjected;  // The amount of bytes injected into the target process 
-	
+	LPCSTR _dll;			// The dll that will be injected
+	SIZE_T _bytesInjected;  // The amount of bytes injected into the target process
+	LPCSTR _fullDllPath;    // The full path to the dll that will be injected
+	HANDLE _hProcess;       // A handle to the victim process
+	LPVOID _lpBuffer;       // A buffer allocated in the heap that will contain the offset to the
+							// address of the function called from the injected dll
 };
 

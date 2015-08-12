@@ -1,10 +1,4 @@
-//#include "MessageBox.h"
-#if defined DLL_EXPORT
-#define DECLDIR __declspec(dllexport)
-#else
-#define DECLDIR __declspec(dllimport)
-#endif
-
+#include "MessageBox.h"
 #include <Windows.h>
 
 BOOL WINAPI DllMain(
@@ -16,7 +10,7 @@ BOOL WINAPI DllMain(
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		MessageBox(nullptr, L"Hello!", L"Simple", 0);
+		MessageBox(nullptr, L"DLLMain!", L"Simple", 0);
 		break;
 
 	case DLL_THREAD_ATTACH:
@@ -31,9 +25,11 @@ BOOL WINAPI DllMain(
 	return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }
 
-extern "C" __declspec(dllexport) void hello()
+//extern "C" MESSAGEBOX_API void hello()
+MESSAGEBOX_API void hello()
 {
 	// Call this export to use DLL
+	MessageBox(nullptr, L"Hello!", L"Simple", 0);
 }
 
 

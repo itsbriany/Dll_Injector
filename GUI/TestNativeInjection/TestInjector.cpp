@@ -26,6 +26,9 @@ namespace TestNativeInjection
 			NativeInjector ntInjector(procId, DLL.c_str());
 			Assert::IsTrue(ntInjector.inject());
 			Assert::IsTrue(ntInjector.getBytesInjected() > 0);
+
+			// TODO try creating a separate test case for running the injected DLL
+			//Assert::IsTrue(ntInjector.loadDllFunction("hello"));
 		}
 
 		/**

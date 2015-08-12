@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClCompile Include="MessageBox.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MessageBox.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B81400BE-36C6-4F60-800E-C347208DEA2A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
