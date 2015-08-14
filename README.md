@@ -1,28 +1,31 @@
-Dll Injector
-----
+# Dll Injector
+---
 
-
-----
 ### Goals
-The goal of this project is to use various dll injection methods to inject a dll into an existing process's memory. This project also comes with a GUI to make it simple to select the dll you wish to inject and the target process.
+The goal of this project is to use various dll injection methods to inject a dll into an existing process's memory. This project also comes with a GUI, making it simple to select the dll you wish to inject and the target process.
 
 ---
 ### Injection Methods
 - Traditional dll injection
     - VirtualAllocEx()
-	Allocate memory for the path to the dll we wish to inject. Make sure to flag the allocated pages as readable, executable, and writeable!
+	> Allocate memory for the path to the dll we wish to inject. Make sure to flag the allocated pages as readable, executable, and writeable!
+    
     - WriteProcessMemory()
-	Write the path to the dll to the allocated memory pointed to via the base address returned from VirtualAllocEx(). 
+	> Write the path to the dll to the allocated memory pointed to via the base address returned from VirtualAllocEx(). 
+	
     - RtlCreateUserThread()
-	A wrapper for NtCreateThreadEx which creates a new thread to execute the executable memory that we just wrote.
+	> A wrapper for NtCreateThreadEx which creates a new thread to execute the executable memory that we just wrote.
 	This is from an undocumented API from ntdll.dll and is more likely to work than CreateRemoteThread() due to Microsoft making continuous tweaks to their documented APIs.
 	The magic happens when the thread calls LoadLibraryA() and we pass our path (in the victim process's memory) as an argument to make the victim process load DllMain().
+    
     - NtCreateThreadEx()
-	The lowest API level for creating a thread.
+	> The lowest API level for creating a thread.
+	
 	- VirtualFreeEx()
-	Free the allocated memory from the dll path we wrote
+	> Free the allocated memory from the dll path we wrote
+	
 	- FreeLibrary()
-	Free the dll once the thread exits so that we can inject our dll again and make it call DllMain()
+	> Free the dll once the thread exits so that we can inject our dll again and make it call DllMain()
 
 ----
 ### Compatibility
