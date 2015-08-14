@@ -1,6 +1,7 @@
-# Dll Injector
----
 
+# Dll Injector
+
+---
 ### Goals
 The goal of this project is to use various dll injection methods to inject a dll into an existing process's memory. This project also comes with a GUI, making it simple to select the dll you wish to inject and the target process.
 
@@ -42,8 +43,8 @@ This project was built with MSVC 2015. It is notable that the GUI was written in
 ### Contact
 If you have any questions, send an email to itsbriany@gmail.com
 
-### License
 ----
+### License
 Licensed under an Apache V2.0 license. For more details, see [LICENSE.txt](https://github.com/itsbriany/DLL_Injector/blob/master/LICENSE)
 
 ----
