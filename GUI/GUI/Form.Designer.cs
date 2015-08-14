@@ -31,7 +31,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.SearchProcessesTextBox = new System.Windows.Forms.TextBox();
             this.InjectionStatusLabel = new System.Windows.Forms.Label();
-            this.InjectionProgressBar = new System.Windows.Forms.ProgressBar();
             this.InjectButton = new System.Windows.Forms.Button();
             this.ProcessListBox = new System.Windows.Forms.ListBox();
             this.SelectDllButton = new System.Windows.Forms.Button();
@@ -49,7 +48,6 @@
             // 
             this.panel1.Controls.Add(this.SearchProcessesTextBox);
             this.panel1.Controls.Add(this.InjectionStatusLabel);
-            this.panel1.Controls.Add(this.InjectionProgressBar);
             this.panel1.Controls.Add(this.InjectButton);
             this.panel1.Location = new System.Drawing.Point(217, 225);
             this.panel1.Name = "panel1";
@@ -75,14 +73,6 @@
             this.InjectionStatusLabel.Size = new System.Drawing.Size(48, 17);
             this.InjectionStatusLabel.TabIndex = 3;
             this.InjectionStatusLabel.Text = "Status";
-            // 
-            // InjectionProgressBar
-            // 
-            this.InjectionProgressBar.ForeColor = System.Drawing.Color.Orange;
-            this.InjectionProgressBar.Location = new System.Drawing.Point(12, 112);
-            this.InjectionProgressBar.Name = "InjectionProgressBar";
-            this.InjectionProgressBar.Size = new System.Drawing.Size(190, 23);
-            this.InjectionProgressBar.TabIndex = 2;
             // 
             // InjectButton
             // 
@@ -210,7 +200,6 @@
 
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ListBox ProcessListBox;
-        private System.Windows.Forms.ProgressBar InjectionProgressBar;
         private System.Windows.Forms.Button InjectButton;
         private System.Windows.Forms.Button SelectDllButton;
         private System.Windows.Forms.Label InjectingLabel;

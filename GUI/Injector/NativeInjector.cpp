@@ -1,5 +1,5 @@
 #include "NativeInjector.h"
-#include "LoadLibraryR.h"
+//#include "LoadLibraryR.h"
 #include "TraditionalInjection.h"
 #include <consoleapi.h>
 #include <string>
@@ -16,8 +16,6 @@ NativeInjector::NativeInjector(DWORD processId, LPCSTR dll) :
 	_lpBuffer(nullptr),
 	_hDll(nullptr)
 {
-	// Allocate memory for a new console
-	AllocConsole();
 }
 
 //::----------------------------------------------------------------------------------------
@@ -31,9 +29,9 @@ bool NativeInjector::elevateTokenPrivileges()
 		priv.PrivilegeCount = 1;
 		priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-		if (LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &priv.Privileges[0].Luid))
-			AdjustTokenPrivileges(hToken, FALSE, &priv, 0, NULL, NULL);
-		printf("Adjusted token privileges\n");
+		if (LookupPrivilegeValue(nullptr, SE_DEBUG_NAME, &priv.Privileges[0].Luid))
+			AdjustTokenPrivileges(hToken, FALSE, &priv, 0, nullptr, nullptr);
+
 		CloseHandle(hToken);
 		return true;
 	}
@@ -91,7 +89,6 @@ bool NativeInjector::traditionalInject()
 
 	DWORD threadId = GetThreadId(hThread);
 	DWORD processId = GetProcessIdOfThread(hThread);
-	printf("Injected thread id: %u for pid: %u", threadId, processId);
 
 	
 
@@ -161,7 +158,6 @@ bool NativeInjector::injectDll()
 	if (_hProcess == nullptr)
 	{
 		const char *ATTACHED_MESSAGE = "Error could not attach to process!\n";
-		WriteConsoleA(_stdOut, ATTACHED_MESSAGE, strlen(ATTACHED_MESSAGE), _charsWritten, nullptr);
 		MessageBoxA(nullptr, ATTACHED_MESSAGE, "Error!", MB_OK + MB_ICONERROR);
 		return false;
 	}
@@ -181,17 +177,13 @@ bool NativeInjector::writeMemory(HANDLE hProcess)
 	DWORD pathSize = GetFullPathNameA(_dll, BUFSIZE, fullPath, fileExt);
 	std::string message("Path to DLL: ");
 	_fullDllPath = fullPath;
-	message.append(_fullDllPath);
-	OutputDebugStringA(message.c_str());
 	
 
 	// Get the full path for the DLL
 	if (pathSize == 0)
 	{
 		const char *NO_DLL_PATH_MESSAGE = "No dll specified!\n";
-		WriteConsoleA(_stdOut, NO_DLL_PATH_MESSAGE, strlen(NO_DLL_PATH_MESSAGE),
-			_charsWritten, nullptr);
-		MessageBoxA(nullptr, "Error no dll specified!", "Error!", MB_OK + MB_ICONERROR);
+		MessageBoxA(nullptr, NO_DLL_PATH_MESSAGE, "Error!", MB_OK + MB_ICONERROR);
 		return false;
 	}
 
@@ -247,49 +239,50 @@ bool NativeInjector::writeMemory(HANDLE hProcess)
 //::----------------------------------------------------------------------------------------
 bool NativeInjector::runDll()
 {
+	// TODO Integrate reflective dll injection
 
-	HANDLE hToken = nullptr;
-	TOKEN_PRIVILEGES priv = { 0 };
+	//HANDLE hToken = nullptr;
+	//TOKEN_PRIVILEGES priv = { 0 };
 
-	// TODO the export should not be hardcoded!
-	DWORD dwReflectiveLoaderOffset = GetReflectiveLoaderOffset(_lpBuffer);
+	//// TODO the export should not be hardcoded!
+	//DWORD dwReflectiveLoaderOffset = GetReflectiveLoaderOffset(_lpBuffer);
 
-	if (dwReflectiveLoaderOffset == 0)
-	{
-		MessageBoxA(nullptr, "Error could not find the address of the loaded dll!",
-			"Error!", MB_OK + MB_ICONERROR);
-		return false;
-	}
+	//if (dwReflectiveLoaderOffset == 0)
+	//{
+	//	MessageBoxA(nullptr, "Error could not find the address of the loaded dll!",
+	//		"Error!", MB_OK + MB_ICONERROR);
+	//	return false;
+	//}
 
-	/*LPTHREAD_START_ROUTINE LPTHlpLoadExportAddress =
-		reinterpret_cast<LPTHREAD_START_ROUTINE>
-		(reinterpret_cast<ULONG_PTR>(_lpBuffer) + dwReflectiveLoaderOffset);*/
+	///*LPTHREAD_START_ROUTINE LPTHlpLoadExportAddress =
+	//	reinterpret_cast<LPTHREAD_START_ROUTINE>
+	//	(reinterpret_cast<ULONG_PTR>(_lpBuffer) + dwReflectiveLoaderOffset);*/
 
-	LPTHREAD_START_ROUTINE LPTHlpLoadExportAddress = reinterpret_cast<LPTHREAD_START_ROUTINE>(_lpBuffer);
+	//LPTHREAD_START_ROUTINE LPTHlpLoadExportAddress = reinterpret_cast<LPTHREAD_START_ROUTINE>(_lpBuffer);
 
-	char message[300] = {};
-	char result[30] = {};
-	strcat_s(message, sizeof message, "The address of the dll is ");
-	sprintf_s(result, "%x", LPTHlpLoadExportAddress);
-	strcat_s(message, sizeof message, result);
-	OutputDebugStringA(message);
+	//char message[300] = {};
+	//char result[30] = {};
+	//strcat_s(message, sizeof message, "The address of the dll is ");
+	//sprintf_s(result, "%x", LPTHlpLoadExportAddress);
+	//strcat_s(message, sizeof message, result);
+	//OutputDebugStringA(message);
 
-	// Launch a thread calling LoadLibraryA to get the proper offset to the function from
-	// our dll we wish to call
-	HANDLE remoteThread = CreateRemoteThread(_hProcess,
-		nullptr,
-		1024 * 1024,
-		LPTHlpLoadExportAddress,
-		nullptr, // TODO this is a pointer to where the arguments go
-		0,
-		nullptr
-		);
-	if (remoteThread == nullptr)
-	{
-		MessageBoxA(nullptr, "Error could not initialize the remote thread!",
-			"Error!", MB_OK + MB_ICONERROR);
-		return false;
-	}
+	//// Launch a thread calling LoadLibraryA to get the proper offset to the function from
+	//// our dll we wish to call
+	//HANDLE remoteThread = CreateRemoteThread(_hProcess,
+	//	nullptr,
+	//	1024 * 1024,
+	//	LPTHlpLoadExportAddress,
+	//	nullptr, // TODO this is a pointer to where the arguments go
+	//	0,
+	//	nullptr
+	//	);
+	//if (remoteThread == nullptr)
+	//{
+	//	MessageBoxA(nullptr, "Error could not initialize the remote thread!",
+	//		"Error!", MB_OK + MB_ICONERROR);
+	//	return false;
+	//}
 	return true;
 }
 

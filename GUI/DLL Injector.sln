@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{88A8AB4C-132B-4940-95EA-2F0F402BD7C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dll Injector", "GUI\Dll Injector.csproj", "{88A8AB4C-132B-4940-95EA-2F0F402BD7C6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{40E4EB0D-6906-4C58-8B13-F6670A04CFDA} = {40E4EB0D-6906-4C58-8B13-F6670A04CFDA}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageBox", "MessageBox\MessageBox.vcxproj", "{B81400BE-36C6-4F60-800E-C347208DEA2A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injector", "Injector\Injector.vcxproj", "{40E4EB0D-6906-4C58-8B13-F6670A04CFDA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NativeInjector", "Injector\Injector.vcxproj", "{40E4EB0D-6906-4C58-8B13-F6670A04CFDA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestNativeInjection", "TestNativeInjection\TestNativeInjection.vcxproj", "{D3829D3C-FEC6-4475-8FAB-646B02F5C62E}"
 EndProject
@@ -54,7 +54,6 @@ Global
 		{B81400BE-36C6-4F60-800E-C347208DEA2A}.Debug|x86.ActiveCfg = Debug|Win32
 		{B81400BE-36C6-4F60-800E-C347208DEA2A}.Debug|x86.Build.0 = Debug|Win32
 		{B81400BE-36C6-4F60-800E-C347208DEA2A}.Release|Any CPU.ActiveCfg = Release|Win32
-		{B81400BE-36C6-4F60-800E-C347208DEA2A}.Release|Any CPU.Build.0 = Release|Win32
 		{B81400BE-36C6-4F60-800E-C347208DEA2A}.Release|ARM.ActiveCfg = Release|Win32
 		{B81400BE-36C6-4F60-800E-C347208DEA2A}.Release|x64.ActiveCfg = Release|x64
 		{B81400BE-36C6-4F60-800E-C347208DEA2A}.Release|x64.Build.0 = Release|x64
@@ -82,7 +81,6 @@ Global
 		{D3829D3C-FEC6-4475-8FAB-646B02F5C62E}.Debug|x86.ActiveCfg = Debug|Win32
 		{D3829D3C-FEC6-4475-8FAB-646B02F5C62E}.Debug|x86.Build.0 = Debug|Win32
 		{D3829D3C-FEC6-4475-8FAB-646B02F5C62E}.Release|Any CPU.ActiveCfg = Release|Win32
-		{D3829D3C-FEC6-4475-8FAB-646B02F5C62E}.Release|Any CPU.Build.0 = Release|Win32
 		{D3829D3C-FEC6-4475-8FAB-646B02F5C62E}.Release|ARM.ActiveCfg = Release|Win32
 		{D3829D3C-FEC6-4475-8FAB-646B02F5C62E}.Release|x64.ActiveCfg = Release|x64
 		{D3829D3C-FEC6-4475-8FAB-646B02F5C62E}.Release|x64.Build.0 = Release|x64
@@ -97,7 +95,6 @@ Global
 		{EEF3FD41-05D8-4A07-8434-EF5D34D76335}.Debug|x86.ActiveCfg = Debug|Win32
 		{EEF3FD41-05D8-4A07-8434-EF5D34D76335}.Debug|x86.Build.0 = Debug|Win32
 		{EEF3FD41-05D8-4A07-8434-EF5D34D76335}.Release|Any CPU.ActiveCfg = Release|Win32
-		{EEF3FD41-05D8-4A07-8434-EF5D34D76335}.Release|Any CPU.Build.0 = Release|Win32
 		{EEF3FD41-05D8-4A07-8434-EF5D34D76335}.Release|ARM.ActiveCfg = Release|ARM
 		{EEF3FD41-05D8-4A07-8434-EF5D34D76335}.Release|ARM.Build.0 = Release|ARM
 		{EEF3FD41-05D8-4A07-8434-EF5D34D76335}.Release|x64.ActiveCfg = Release|x64
@@ -112,7 +109,6 @@ Global
 		{408FEDA4-9AC8-4463-9E91-C2FDA737E3E6}.Debug|x86.ActiveCfg = Debug|Win32
 		{408FEDA4-9AC8-4463-9E91-C2FDA737E3E6}.Debug|x86.Build.0 = Debug|Win32
 		{408FEDA4-9AC8-4463-9E91-C2FDA737E3E6}.Release|Any CPU.ActiveCfg = Release|Win32
-		{408FEDA4-9AC8-4463-9E91-C2FDA737E3E6}.Release|Any CPU.Build.0 = Release|Win32
 		{408FEDA4-9AC8-4463-9E91-C2FDA737E3E6}.Release|ARM.ActiveCfg = Release|Win32
 		{408FEDA4-9AC8-4463-9E91-C2FDA737E3E6}.Release|x64.ActiveCfg = Release|x64
 		{408FEDA4-9AC8-4463-9E91-C2FDA737E3E6}.Release|x64.Build.0 = Release|x64

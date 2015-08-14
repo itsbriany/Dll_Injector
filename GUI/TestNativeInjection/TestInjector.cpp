@@ -31,10 +31,6 @@ namespace TestNativeInjection
 			// Inject the process with traditional dll injection
 			NativeInjector ntInjector(procId, dllFullPath);
 			Assert::IsTrue(ntInjector.traditionalInject());
-			//Assert::IsTrue(ntInjector.getBytesInjected() > 0);
-
-			// TODO try creating a separate test case for running the injected DLL
-			//Assert::IsTrue(ntInjector.loadDllFunction("hello"));
 		}
 
 		/**

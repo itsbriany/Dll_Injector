@@ -1,12 +1,18 @@
 ﻿using System.Runtime.InteropServices;
+using GUI.Properties;
 
 namespace GUI
 {
-    class Injector
+    static class Injector
     {
-        // TODO verify that this DLL is located in the same directory as the executable!
-        [DllImport("Injector.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool traditionalInject(int dwProcessId, string fullDllPath);
+        // Make sure the the build configuration matches!
+        private const string NativeDependency = "bin\\NativeInjector.dll";
+
+        [DllImport(NativeDependency,
+            CharSet = CharSet.Ansi,
+            CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool traditionalInject(uint dwProcessId, string fullDllPath);
 
         /// <summary>
         /// Injects a DLL into a target process
@@ -14,17 +20,9 @@ namespace GUI
         /// <param name="processId">The process ID of the victim</param>
         /// <param name="fullDllPath">The full path to the dll being loaded into the victim process</param>
         /// <returns>True on success</returns>
-        public static bool InjectDll(int processId, string fullDllPath)
+        public static bool InjectDll(uint processId, string fullDllPath)
         {
-            try
-            {
-                return traditionalInject(processId, fullDllPath);
-
-            }
-            catch (System.Exception)
-            {
-                return false;
-            }           
+            return traditionalInject(processId, fullDllPath);
         }
     }
 }

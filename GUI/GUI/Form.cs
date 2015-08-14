@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Windows.Forms;
 using GUI.Properties;
 
@@ -9,9 +10,9 @@ namespace GUI
     public partial class Form : System.Windows.Forms.Form
     {
 
-        private List<Target> _processes = new List<Target>();
-        private string _dll_path;
-        private int _selected_process;
+        private readonly List<Target> _processes = new List<Target>();
+        private string _dllPath;
+        private uint _selectedProcess;
 
         public Form()
         {
@@ -31,12 +32,11 @@ namespace GUI
 
             try
             {
-                //Stream myStream = openFileDialog.OpenFile();
                 SelectDllLabel.Text = openFileDialog.SafeFileName;
 
                 if (SelectDllLabel.Text == null) return;
 
-                _dll_path = openFileDialog.FileName;
+                _dllPath = openFileDialog.FileName;
 
             }
             catch (Exception ex)
@@ -48,9 +48,6 @@ namespace GUI
         private void Form_Load(object sender, EventArgs e)
         {
             GetProcesses();
-            InjectionProgressBar.Visible = true;
-            InjectionProgressBar.Minimum = 0;
-            InjectionProgressBar.Maximum = 2;
         }
 
         private void GetProcesses()
@@ -68,7 +65,6 @@ namespace GUI
 
         private void RemoveProcesses()
         {
-            InjectionProgressBar.Value = 0;
             _processes.Clear();
             for (var n = ProcessListBox.Items.Count - 1; n >= 0; --n)
             {
@@ -103,7 +99,7 @@ namespace GUI
             {
                 SelectProcessLabel.Text = _processes[selectedIndex].Name + ' ' + '(' + 
                     _processes[selectedIndex].Pid + ')';
-                _selected_process= _processes[selectedIndex].Pid;
+                _selectedProcess= (uint) _processes[selectedIndex].Pid;
             }
             catch (Exception)
             {
@@ -119,7 +115,7 @@ namespace GUI
             {
                 SelectProcessLabel.Text = _processes[selectedIndex].Name + ' ' + '(' +
                     _processes[selectedIndex].Pid + ')';
-                _selected_process = _processes[selectedIndex].Pid;
+                _selectedProcess = (uint) _processes[selectedIndex].Pid;
             }
             catch (Exception)
             {
@@ -129,14 +125,15 @@ namespace GUI
 
         private void InjectButton_Click(object sender, EventArgs e)
         {
-            InjectionProgressBar.PerformStep();
-            if (Injector.InjectDll(_selected_process, _dll_path))
+            if (Injector.InjectDll(_selectedProcess, _dllPath))
             {
                 InjectionStatusLabel.Text = Resources.resx_injectionSuccess;
-                InjectionProgressBar.PerformStep();
+                InjectionStatusLabel.ForeColor = Color.DarkGreen;
+                InjectionStatusLabel.Font = new Font(InjectionStatusLabel.Font, FontStyle.Bold);
                 return;
             }
             InjectionStatusLabel.Text = Resources.resx_injectionFailed;
+            InjectionStatusLabel.ForeColor = Color.Red;
         }
 
         private void SearchProcessesTextBox_Enter(object sender, EventArgs e)
