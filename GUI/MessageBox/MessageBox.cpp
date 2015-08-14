@@ -25,8 +25,7 @@ BOOL WINAPI DllMain(
 	return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }
 
-//extern "C" MESSAGEBOX_API void hello()
-MESSAGEBOX_API void hello()
+extern "C" MESSAGEBOX_API void hello()
 {
 	// Call this export to use DLL
 	MessageBox(nullptr, L"Hello!", L"Simple", 0);

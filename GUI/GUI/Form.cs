@@ -130,7 +130,7 @@ namespace GUI
         private void InjectButton_Click(object sender, EventArgs e)
         {
             InjectionProgressBar.PerformStep();
-            if (Injector.InjectDll(_selected_process))
+            if (Injector.InjectDll(_selected_process, _dll_path))
             {
                 InjectionStatusLabel.Text = Resources.resx_injectionSuccess;
                 InjectionProgressBar.PerformStep();

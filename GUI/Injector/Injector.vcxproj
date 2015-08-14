@@ -122,6 +122,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;INJECTOR_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\ReflectiveDLLInjection\inject\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,9 +151,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="NativeInjector.h" />
+    <ClInclude Include="TraditionalInjection.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NativeInjector.cpp" />
+    <ClCompile Include="TraditionalInjection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\ReflectiveDLLInjection\inject\inject.vcxproj">

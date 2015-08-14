@@ -1,3 +1,5 @@
+// 
+
 #pragma once
 #ifdef INJECTOR_EXPORTS
 #define NATIVE_INJECTOR_DLL_API __declspec(dllexport)
@@ -7,14 +9,24 @@
 
 #include <windows.h>
 
-class NATIVE_INJECTOR_DLL_API NativeInjector
+extern "C" class NATIVE_INJECTOR_DLL_API NativeInjector
 {
 public:
 
+	 
+	 //************************************
+	 // Description: Use this to inject a dll into a victim process
+	 // Parameter: DWORD processId the victim's process ID
+	 // Parameter: LPCSTR dll the full path to the dll we are injecting
+	 //************************************
 	 NativeInjector(DWORD processId, LPCSTR dll);
 	
-	~NativeInjector();
-	
+
+	//************************************
+	// Returns:	True if the dll was successfully injected into the target process
+	//************************************
+	bool traditionalInject();
+
 	//************************************
 	// Returns: true of the this native injector's dll was successfully 
 	//	injected into a process
@@ -26,6 +38,11 @@ public:
 
 	
 private:
+
+	//************************************
+	// Returns:   True if the current process's token privileges were elevated
+	//************************************
+	bool elevateTokenPrivileges();
 
 	//************************************
 	// Returns:   true if we have successfully attached to the target process
@@ -42,7 +59,7 @@ private:
 	//************************************
 	// Returns:  true if the DLL was successfully executed
 	//************************************
-	bool __cdecl runDll();
+	bool runDll();
 
 	HANDLE _stdOut;			// A handle to stdout
 	LPDWORD _charsWritten;	// The number of chars written
@@ -53,5 +70,14 @@ private:
 	HANDLE _hProcess;       // A handle to the victim process
 	LPVOID _lpBuffer;       // A buffer allocated in the heap that will contain the offset to the
 							// address of the function called from the injected dll
+	HANDLE _hDll;			// A handle to the dll file
 };
 
+
+//************************************
+// Description: A decorator for calling the traditional dll injection
+// Parameter: DWORD processId the process ID of the victim process
+// Parameter: LPCSTR lpFullPathDll the full path to the dll to be injected
+// Returns:   True on success
+//************************************
+extern "C" NATIVE_INJECTOR_DLL_API bool traditionalInject(DWORD processId, LPCSTR lpFullPathDll);

@@ -5,4 +5,4 @@
 #define MESSAGEBOX_API __declspec(dllimport)
 #endif
 
-MESSAGEBOX_API void hello();
+extern "C" MESSAGEBOX_API void hello();

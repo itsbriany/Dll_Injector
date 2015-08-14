@@ -18,14 +18,20 @@ namespace TestNativeInjection
 			PROCESSENTRY32 entry;
 			entry.dwSize = sizeof(PROCESSENTRY32);
 			const HANDLE SNAPSHOT = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-			const std::wstring WC_ENTRY_NAME(L"notepad.exe");
-			const std::string DLL("MessageBox.dll");
-			DWORD procId;
+			const std::wstring WC_ENTRY_NAME(L"putty.exe");
+			const DWORD BUFSIZE = 4096;
+			char dllFullPath[BUFSIZE];
+			char *fileExt[BUFSIZE];
+			DWORD pathSize = GetFullPathNameA("MessageBox.dll", BUFSIZE, dllFullPath, fileExt);
 			
+			// Find the process ID
+			DWORD procId;
 			Assert::IsTrue(findProcessByName(SNAPSHOT, entry, WC_ENTRY_NAME, procId));
-			NativeInjector ntInjector(procId, DLL.c_str());
-			Assert::IsTrue(ntInjector.inject());
-			Assert::IsTrue(ntInjector.getBytesInjected() > 0);
+
+			// Inject the process with traditional dll injection
+			NativeInjector ntInjector(procId, dllFullPath);
+			Assert::IsTrue(ntInjector.traditionalInject());
+			//Assert::IsTrue(ntInjector.getBytesInjected() > 0);
 
 			// TODO try creating a separate test case for running the injected DLL
 			//Assert::IsTrue(ntInjector.loadDllFunction("hello"));

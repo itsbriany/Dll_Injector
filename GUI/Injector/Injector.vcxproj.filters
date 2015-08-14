@@ -18,9 +18,15 @@
     <ClInclude Include="NativeInjector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TraditionalInjection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NativeInjector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TraditionalInjection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
