@@ -46,10 +46,3 @@ If you have any questions, send an email to itsbriany@gmail.com
 ----
 ### License
 Licensed under an Apache V2.0 license. For more details, see [LICENSE.txt](https://github.com/itsbriany/DLL_Injector/blob/master/LICENSE)
-
-----
-### TODO
-
-- Support reflective dll injection and properly integrate it into the project
-- Provide an interface to call exports from the dll being injected
-- Provide instructions on building the project
