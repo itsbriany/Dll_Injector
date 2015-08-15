@@ -25,7 +25,13 @@ public:
 	//************************************
 	// Returns:	True if the dll was successfully injected into the target process
 	//************************************
-	bool traditionalInject();
+	bool traditionalInject(BOOL freeDll);
+
+	//************************************
+	// Parameter: LPCSTR lpExportName the name of the dll export from the injected dll
+	// Returns:	True if the target export was called from the dll
+	//************************************
+	bool callRemoteExport(LPCSTR lpExportName);
 
 	//************************************
 	// Returns: true of the this native injector's dll was successfully 
@@ -45,6 +51,12 @@ private:
 	bool elevateTokenPrivileges();
 
 	//************************************
+	// Parameter: HANDLE hProc a handle to the process already injected with a dll
+	// Returns:   true if the dll was successfully released from the process
+	//************************************
+	bool releaseInjectedDll(HANDLE hProc);
+
+	//************************************
 	// Returns:   true if we have successfully attached to the target process
 	//************************************
 	bool injectDll();
@@ -61,16 +73,18 @@ private:
 	//************************************
 	bool runDll();
 
-	HANDLE _stdOut;			// A handle to stdout
-	LPDWORD _charsWritten;	// The number of chars written
-	DWORD _processId;		// The victim process
-	LPCSTR _dll;			// The dll that will be injected
-	SIZE_T _bytesInjected;  // The amount of bytes injected into the target process
-	LPCSTR _fullDllPath;    // The full path to the dll that will be injected
-	HANDLE _hProcess;       // A handle to the victim process
-	LPVOID _lpBuffer;       // A buffer allocated in the heap that will contain the offset to the
-							// address of the function called from the injected dll
-	HANDLE _hDll;			// A handle to the dll file
+	HANDLE _stdOut;			           // A handle to stdout
+	LPDWORD _charsWritten;	           // The number of chars written
+	DWORD _processId;	               // The victim process
+	LPCSTR _dll;			           // The dll that will be injected
+	SIZE_T _bytesInjected;             // The amount of bytes injected into the target process
+	LPCSTR _fullDllPath;               // The full path to the dll that will be injected
+	HANDLE _hProcess;                  // A handle to the victim process
+	LPVOID _lpBuffer;                  // A buffer allocated in the heap that will contain the offset to the
+								       // address of the function called from the injected dll
+	HANDLE _hDll;			           // A handle to the dll file
+	BOOL _freeInjectedDll;             // Free the dll library from the process? 
+	DWORD _dwLoadLibraryBaseAddr;      // The base address of where LoadLibrary is located at in the victim process
 };
 
 

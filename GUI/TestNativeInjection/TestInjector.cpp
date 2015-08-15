@@ -30,7 +30,9 @@ namespace TestNativeInjection
 
 			// Inject the process with traditional dll injection
 			NativeInjector ntInjector(procId, dllFullPath);
-			Assert::IsTrue(ntInjector.traditionalInject());
+
+			// Do not release the injected dll from the process
+			Assert::IsTrue(ntInjector.traditionalInject(false));
 		}
 
 		/**

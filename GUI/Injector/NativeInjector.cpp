@@ -14,7 +14,8 @@ NativeInjector::NativeInjector(DWORD processId, LPCSTR dll) :
 	_fullDllPath(dll),
 	_hProcess(nullptr),
 	_lpBuffer(nullptr),
-	_hDll(nullptr)
+	_hDll(nullptr),
+	_freeInjectedDll(false)
 {
 }
 
@@ -38,9 +39,41 @@ bool NativeInjector::elevateTokenPrivileges()
 	return false;
 }
 
-//::----------------------------------------------------------------------------------------
-bool NativeInjector::traditionalInject()
+//::--------------------------------------------------------------------------------------------------------
+bool NativeInjector::releaseInjectedDll(HANDLE hProc)
 {
+	
+	
+	if (!_dwLoadLibraryBaseAddr) return false;
+
+	HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
+	HANDLE hThread;
+
+	hThread = CreateRemoteThread(hProc,
+	                             nullptr,
+	                             0,
+	                             reinterpret_cast<LPTHREAD_START_ROUTINE>(GetProcAddress(hKernel32, "FreeLibrary")),
+	                             reinterpret_cast<void*>(_dwLoadLibraryBaseAddr),
+	                             0,
+	                             nullptr
+	);
+	if (!hThread) return false;
+
+	// Wait for the thread to finish
+	WaitForSingleObject(hThread, INFINITE);
+
+
+	// Close the handle on the thread
+	if (!CloseHandle(hThread)) return false;
+	
+	return true;
+}
+
+//::----------------------------------------------------------------------------------------
+bool NativeInjector::traditionalInject(BOOL freeDll)
+{
+
+	
 
 	// Elevate permissions
 	if(!elevateTokenPrivileges()) return false;
@@ -82,7 +115,7 @@ bool NativeInjector::traditionalInject()
 		)) return false;
 
 	// Execute the remote thread from the target process
-	HANDLE hThread = nullptr;
+	HANDLE hThread;
 	hThread = RtlCreateUserThread(hProc, loadLibAddr, lpBaseAddr);
 
 	if (hThread == nullptr) return false;
@@ -96,8 +129,7 @@ bool NativeInjector::traditionalInject()
 	WaitForSingleObject(hThread, INFINITE);
 
 	// Save the address of where the dll is loaded
-	DWORD dwLibModule;
-	GetExitCodeThread(hThread, &dwLibModule);
+	GetExitCodeThread(hThread, &_dwLoadLibraryBaseAddr);
 
 	// Clean up
 	if (!CloseHandle(hThread)) return false;
@@ -107,26 +139,22 @@ bool NativeInjector::traditionalInject()
 	if (!dwMemReleased) return false;
 
 	// Unload the dll that was previously loaded
-	hThread = CreateRemoteThread(hProc,
-		nullptr,
-		0,
-		reinterpret_cast<LPTHREAD_START_ROUTINE>(GetProcAddress(hKernel32, "FreeLibrary")),
-		reinterpret_cast<void*>(dwLibModule),
-		0,
-		nullptr
-	);
-	if (!hThread) return false;
+	_freeInjectedDll = freeDll;
+	if (_freeInjectedDll)
+	{
+		if (!releaseInjectedDll(hProc)) return false;
+	}
 
-	// Wait for the thread to finish
-	WaitForSingleObject(hThread, INFINITE);
-	
-
-	// Close the handle on the thread
-	if (!CloseHandle(hThread)) return false;
 
 	// Release the handle on the victim process
 	if(!CloseHandle(hProc)) return false;
 
+	return true;
+}
+
+//::----------------------------------------------------------------------------------------
+bool NativeInjector::callRemoteExport(LPCSTR lpExportName)
+{
 	return true;
 }
 
@@ -290,5 +318,5 @@ bool NativeInjector::runDll()
 extern "C" NATIVE_INJECTOR_DLL_API bool traditionalInject(DWORD processId, LPCSTR lpFullPathDll)
 {
 	NativeInjector injector(processId, lpFullPathDll);
-	return injector.traditionalInject();
+	return injector.traditionalInject(true);
 }
