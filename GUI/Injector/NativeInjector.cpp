@@ -13,9 +13,7 @@ NativeInjector::NativeInjector(DWORD processId, LPCSTR dll) :
 	_bytesInjected(0),
 	_fullDllPath(dll),
 	_hProcess(nullptr),
-	_lpBuffer(nullptr),
-	_hDll(nullptr),
-	_freeInjectedDll(false)
+	_lpBuffer(nullptr)
 {
 }
 
@@ -72,9 +70,6 @@ bool NativeInjector::releaseInjectedDll(HANDLE hProc)
 //::----------------------------------------------------------------------------------------
 bool NativeInjector::traditionalInject(BOOL freeDll)
 {
-
-	
-
 	// Elevate permissions
 	if(!elevateTokenPrivileges()) return false;
 
@@ -139,8 +134,7 @@ bool NativeInjector::traditionalInject(BOOL freeDll)
 	if (!dwMemReleased) return false;
 
 	// Unload the dll that was previously loaded
-	_freeInjectedDll = freeDll;
-	if (_freeInjectedDll)
+	if (freeDll)
 	{
 		if (!releaseInjectedDll(hProc)) return false;
 	}
@@ -153,8 +147,55 @@ bool NativeInjector::traditionalInject(BOOL freeDll)
 }
 
 //::----------------------------------------------------------------------------------------
-bool NativeInjector::callRemoteExport(LPCSTR lpExportName)
+bool NativeInjector::callRemoteExport(BOOL freeDll, LPCSTR lpExportName, LPVOID lpArgs)
 {
+	// Elevate permissions
+	if (!elevateTokenPrivileges()) return false;
+	
+	// Open the target process
+	HANDLE hProc = OpenProcess(PROCESS_CREATE_THREAD |
+		PROCESS_QUERY_INFORMATION |
+		PROCESS_VM_OPERATION |
+		PROCESS_VM_READ |
+		PROCESS_VM_WRITE,
+		FALSE,
+		_processId);
+
+	// Load payload in our own virtual address space
+	HMODULE hLoaded = LoadLibraryA(_fullDllPath);
+
+	if (!hLoaded) return false;
+	
+	// Get the address of the export in our address space
+	void* lpExport = GetProcAddress(hLoaded, lpExportName);
+	DWORD dwOffset = static_cast<char*>(lpExport) - reinterpret_cast<char*>(hLoaded);
+	FreeLibrary(hLoaded);
+
+	// Use the relative offset to calculate the location of the export in the remote process
+	DWORD dwExportAddress = static_cast<DWORD>(_dwLoadLibraryBaseAddr) + dwOffset;
+	
+	// Call the export in the memory space of the victim process
+	HANDLE hThread = RtlCreateUserThread(hProc,
+		reinterpret_cast<LPVOID>(dwExportAddress),
+		lpArgs);
+
+	if (!hThread) return false;
+
+	// Free the dll
+	if (freeDll)
+	{
+		// Wait for the thread to finish before proceeding
+		WaitForSingleObject(hThread, INFINITE);
+		
+		// Clean up the thread
+		if (!CloseHandle(hThread)) return false;
+
+		releaseInjectedDll(hProc);
+	}
+
+	// Close the handle to the victim process
+	if (!CloseHandle(hProc)) return false;
+
 	return true;
 }
 

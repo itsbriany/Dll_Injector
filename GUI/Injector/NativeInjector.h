@@ -28,10 +28,12 @@ public:
 	bool traditionalInject(BOOL freeDll);
 
 	//************************************
+	// Parameter: BOOL freeDll do we wish to free the dll once the export finishes executing?
 	// Parameter: LPCSTR lpExportName the name of the dll export from the injected dll
+	// Parameter: LPVOID lpArgs args to the remote export
 	// Returns:	True if the target export was called from the dll
 	//************************************
-	bool callRemoteExport(LPCSTR lpExportName);
+	bool callRemoteExport(BOOL freeDll, LPCSTR lpExportName, LPVOID lpArgs);
 
 	//************************************
 	// Returns: true of the this native injector's dll was successfully 
@@ -82,8 +84,7 @@ private:
 	HANDLE _hProcess;                  // A handle to the victim process
 	LPVOID _lpBuffer;                  // A buffer allocated in the heap that will contain the offset to the
 								       // address of the function called from the injected dll
-	HANDLE _hDll;			           // A handle to the dll file
-	BOOL _freeInjectedDll;             // Free the dll library from the process? 
+	
 	DWORD _dwLoadLibraryBaseAddr;      // The base address of where LoadLibrary is located at in the victim process
 };
 

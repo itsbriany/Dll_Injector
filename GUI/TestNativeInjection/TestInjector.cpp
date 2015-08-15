@@ -33,6 +33,9 @@ namespace TestNativeInjection
 
 			// Do not release the injected dll from the process
 			Assert::IsTrue(ntInjector.traditionalInject(false));
+
+			// Call an export from the dll and then free it
+			Assert::IsTrue(ntInjector.callRemoteExport(true, "hello", nullptr));
 		}
 
 		/**
