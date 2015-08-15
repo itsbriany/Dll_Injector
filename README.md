@@ -36,7 +36,10 @@ This project was built with MSVC 2015. It is notable that the GUI was written in
 
 Set the project's configuration settings to Release for GUI, MessageBox, and NativeInjector in Visual Studio. 
 
-You can load any dll into any desired process. For quick testing, you can demo the MessageBox.dll packaged in this project's Release/bin 
+You can load any dll into any desired process. For quick testing, you can demo the MessageBox.dll packaged in this project's Release/bin.
+
+
+To use the application, just run GUI.exe from the Release directory.
 
 ---
 ### Resources
