@@ -11,7 +11,7 @@ namespace TestNativeInjection
 	TEST_CLASS(DllInjectionUnitTest)
 	{
 	public:
-		
+
 		TEST_METHOD(TestDllInjection)
 		{
 		
@@ -22,7 +22,7 @@ namespace TestNativeInjection
 			const DWORD BUFSIZE = 4096;
 			char dllFullPath[BUFSIZE];
 			char *fileExt[BUFSIZE];
-			DWORD pathSize = GetFullPathNameA("MessageBox.dll", BUFSIZE, dllFullPath, fileExt);
+			GetFullPathNameA("MessageBox.dll", BUFSIZE, dllFullPath, fileExt);
 			
 			// Find the process ID
 			DWORD procId;
@@ -34,7 +34,7 @@ namespace TestNativeInjection
 			// Do not release the injected dll from the process
 			Assert::IsTrue(ntInjector.traditionalInject(false));
 
-			// Call an export from the dll and then free it
+			// Call an export from the dll and then free it	
 			Assert::IsTrue(ntInjector.callRemoteExport(true, "hello", nullptr));
 		}
 

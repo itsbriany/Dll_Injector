@@ -1,19 +1,11 @@
 #include "NativeInjector.h"
-//#include "LoadLibraryR.h"
 #include "TraditionalInjection.h"
-#include <consoleapi.h>
-#include <string>
 
 
 NativeInjector::NativeInjector(DWORD processId, LPCSTR dll) :
-	_stdOut(GetStdHandle(STD_OUTPUT_HANDLE)),
-	_charsWritten(nullptr),
 	_processId(processId),
-	_dll(dll),
-	_bytesInjected(0),
 	_fullDllPath(dll),
-	_hProcess(nullptr),
-	_lpBuffer(nullptr)
+	_dwLoadLibraryBaseAddr(0)
 {
 }
 
@@ -149,6 +141,7 @@ bool NativeInjector::traditionalInject(BOOL freeDll)
 //::----------------------------------------------------------------------------------------
 bool NativeInjector::callRemoteExport(BOOL freeDll, LPCSTR lpExportName, LPVOID lpArgs)
 {
+
 	// Elevate permissions
 	if (!elevateTokenPrivileges()) return false;
 	
@@ -174,10 +167,35 @@ bool NativeInjector::callRemoteExport(BOOL freeDll, LPCSTR lpExportName, LPVOID 
 	// Use the relative offset to calculate the location of the export in the remote process
 	DWORD dwExportAddress = static_cast<DWORD>(_dwLoadLibraryBaseAddr) + dwOffset;
 	
+	// Write the arguments provided to the victim's memory
+	LPVOID lpArgsAddress = nullptr;
+	SIZE_T lpBytesWritten;
+	if (lpArgs)
+	{
+		lpArgsAddress = VirtualAllocEx(hProc, 
+			nullptr,
+			sizeof(lpArgs),
+			MEM_RESERVE | MEM_COMMIT,
+			PAGE_READWRITE);
+		
+		if (!lpArgsAddress) return false;
+
+		WriteProcessMemory(hProc,
+			lpArgsAddress,
+			lpArgs,
+			sizeof(lpArgs),
+			&lpBytesWritten
+			);
+
+		if (!lpBytesWritten) return false;
+
+		// TODO still need to free the memory allocated for lpArgs
+	}
+	
 	// Call the export in the memory space of the victim process
 	HANDLE hThread = RtlCreateUserThread(hProc,
 		reinterpret_cast<LPVOID>(dwExportAddress),
-		lpArgs);
+		lpArgsAddress);
 
 	if (!hThread) return false;
 
@@ -200,163 +218,7 @@ bool NativeInjector::callRemoteExport(BOOL freeDll, LPCSTR lpExportName, LPVOID 
 }
 
 //::----------------------------------------------------------------------------------------
-bool NativeInjector::inject()
-{
-	OutputDebugStringA("Injecting...");
-	if (injectDll() == false)
-	{
-		const char *FAILED_MESSAGE = "Failed to inject dll to process\n";
-		WriteConsoleA(_stdOut, FAILED_MESSAGE, strlen(FAILED_MESSAGE), _charsWritten, nullptr);
-		return false;
-	}
-	return true;
-}
-
-//::----------------------------------------------------------------------------------------
-bool NativeInjector::injectDll()
-{
-	// Open the victim process
-	_hProcess = OpenProcess(PROCESS_CREATE_THREAD | 
-		PROCESS_QUERY_INFORMATION |
-		PROCESS_VM_OPERATION | 
-		PROCESS_VM_READ |
-		PROCESS_VM_WRITE,
-		FALSE,
-		_processId);
-
-	if (_hProcess == nullptr)
-	{
-		const char *ATTACHED_MESSAGE = "Error could not attach to process!\n";
-		MessageBoxA(nullptr, ATTACHED_MESSAGE, "Error!", MB_OK + MB_ICONERROR);
-		return false;
-	}
-
-	// Allocate memory for the DLL we are injecting
-	if (writeMemory(_hProcess)) return true;
-
-	return false;
-}
-
-//::----------------------------------------------------------------------------------------
-bool NativeInjector::writeMemory(HANDLE hProcess)
-{
-	const DWORD BUFSIZE = 4096;
-	char fullPath[BUFSIZE];
-	char *fileExt[BUFSIZE];
-	DWORD pathSize = GetFullPathNameA(_dll, BUFSIZE, fullPath, fileExt);
-	std::string message("Path to DLL: ");
-	_fullDllPath = fullPath;
-	
-
-	// Get the full path for the DLL
-	if (pathSize == 0)
-	{
-		const char *NO_DLL_PATH_MESSAGE = "No dll specified!\n";
-		MessageBoxA(nullptr, NO_DLL_PATH_MESSAGE, "Error!", MB_OK + MB_ICONERROR);
-		return false;
-	}
-
-	// Get a handle on the dll file we are injecting
-	HANDLE dllFile = CreateFileA(
-		fullPath,
-		GENERIC_READ,
-		0,
-		nullptr,
-		OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL,
-		nullptr
-		);
-
-	if (dllFile == INVALID_HANDLE_VALUE)
-	{
-		MessageBoxA(nullptr, "Error cannot open dll!", "Error!", MB_OK + MB_ICONERROR);
-		return false;
-	}
-
-	SIZE_T dllSize = GetFileSize(dllFile, nullptr); 
-
-	// Allocate the virtual memory
-	LPVOID lpDllBaseAddr = VirtualAllocEx(hProcess,
-		nullptr,
-		dllSize,
-		MEM_COMMIT | MEM_RESERVE,
-		PAGE_EXECUTE_READWRITE);
-
-	// Write to the virtual memory we just allocated
-	_lpBuffer = HeapAlloc(GetProcessHeap(),
-		HEAP_GENERATE_EXCEPTIONS|HEAP_ZERO_MEMORY,
-		dllSize);
-	DWORD bytesRead;
-
-	if (ReadFile(dllFile, _lpBuffer, dllSize, &bytesRead, nullptr) == false)
-	{
-		MessageBoxA(nullptr, "Error cannot read dll!", "Error!", MB_OK + MB_ICONERROR);
-		return false;
-	}
-	if (WriteProcessMemory(hProcess, lpDllBaseAddr, _lpBuffer, dllSize, &_bytesInjected) == false)
-	{
-	  MessageBoxA(nullptr, "Error cannot WriteProcessMemory!", "Error!", MB_OK + MB_ICONERROR);
-	  return false;
-	}
-	
-	// Run the function from the dll
-	if (runDll()) return true;
-
-	return false;
-}
-
-//::----------------------------------------------------------------------------------------
-bool NativeInjector::runDll()
-{
-	// TODO Integrate reflective dll injection
-
-	//HANDLE hToken = nullptr;
-	//TOKEN_PRIVILEGES priv = { 0 };
-
-	//// TODO the export should not be hardcoded!
-	//DWORD dwReflectiveLoaderOffset = GetReflectiveLoaderOffset(_lpBuffer);
-
-	//if (dwReflectiveLoaderOffset == 0)
-	//{
-	//	MessageBoxA(nullptr, "Error could not find the address of the loaded dll!",
-	//		"Error!", MB_OK + MB_ICONERROR);
-	//	return false;
-	//}
-
-	///*LPTHREAD_START_ROUTINE LPTHlpLoadExportAddress =
-	//	reinterpret_cast<LPTHREAD_START_ROUTINE>
-	//	(reinterpret_cast<ULONG_PTR>(_lpBuffer) + dwReflectiveLoaderOffset);*/
-
-	//LPTHREAD_START_ROUTINE LPTHlpLoadExportAddress = reinterpret_cast<LPTHREAD_START_ROUTINE>(_lpBuffer);
-
-	//char message[300] = {};
-	//char result[30] = {};
-	//strcat_s(message, sizeof message, "The address of the dll is ");
-	//sprintf_s(result, "%x", LPTHlpLoadExportAddress);
-	//strcat_s(message, sizeof message, result);
-	//OutputDebugStringA(message);
-
-	//// Launch a thread calling LoadLibraryA to get the proper offset to the function from
-	//// our dll we wish to call
-	//HANDLE remoteThread = CreateRemoteThread(_hProcess,
-	//	nullptr,
-	//	1024 * 1024,
-	//	LPTHlpLoadExportAddress,
-	//	nullptr, // TODO this is a pointer to where the arguments go
-	//	0,
-	//	nullptr
-	//	);
-	//if (remoteThread == nullptr)
-	//{
-	//	MessageBoxA(nullptr, "Error could not initialize the remote thread!",
-	//		"Error!", MB_OK + MB_ICONERROR);
-	//	return false;
-	//}
-	return true;
-}
-
-//::----------------------------------------------------------------------------------------
-extern "C" NATIVE_INJECTOR_DLL_API bool traditionalInject(DWORD processId, LPCSTR lpFullPathDll)
+extern "C" NATIVE_INJECTOR_DLL_API bool traditionalInject(BOOL unloadLibrary, DWORD processId, LPCSTR lpFullPathDll)
 {
 	NativeInjector injector(processId, lpFullPathDll);
 	return injector.traditionalInject(true);

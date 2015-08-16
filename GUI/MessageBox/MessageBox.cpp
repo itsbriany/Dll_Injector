@@ -1,5 +1,6 @@
 #include "MessageBox.h"
 #include <Windows.h>
+#include <string>
 
 BOOL WINAPI DllMain(
 	HINSTANCE hinstDLL,  // handle to DLL module
@@ -27,8 +28,18 @@ BOOL WINAPI DllMain(
 
 extern "C" MESSAGEBOX_API void hello()
 {
-	// Call this export to use DLL
 	MessageBox(nullptr, L"Hello!", L"Simple", 0);
+}
+
+extern "C" MESSAGEBOX_API BOOL helloArg(DWORD dwNumber, LPSTR lpMessage)
+{
+	std::string message(lpMessage);
+	CHAR *numberBuffer = static_cast<char*>(malloc(300));
+	_itoa_s(dwNumber, numberBuffer, 300, 10);
+	message.append(numberBuffer);
+	//strcat_s(lpMessage, strlen(lpMessage), numberBuffer);
+	MessageBoxA(nullptr, message.c_str(), "HelloArg", 0);
+	return true;
 }
 
 

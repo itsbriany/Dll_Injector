@@ -125,7 +125,7 @@ namespace GUI
 
         private void InjectButton_Click(object sender, EventArgs e)
         {
-            if (Injector.InjectDll(_selectedProcess, _dllPath))
+            if (Injector.InjectDll(true, _selectedProcess, _dllPath))
             {
                 InjectionStatusLabel.Text = Resources.resx_injectionSuccess;
                 InjectionStatusLabel.ForeColor = Color.DarkGreen;
