@@ -131,4 +131,10 @@
   <data name="resx_injectionSuccess" xml:space="preserve">
     <value>Injection Successful!</value>
   </data>
+  <data name="resx_selectProcessPrompt" xml:space="preserve">
+    <value>Please select a process</value>
+  </data>
+  <data name="resx_dllSelectionPrompt" xml:space="preserve">
+    <value>Please select a dll to inject</value>
+  </data>
 </root>

@@ -70,6 +70,15 @@ namespace GUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please select a dll to inject.
+        /// </summary>
+        internal static string resx_dllSelectionPrompt {
+            get {
+                return ResourceManager.GetString("resx_dllSelectionPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Injection Failed!.
         /// </summary>
         internal static string resx_injectionFailed {
@@ -84,6 +93,15 @@ namespace GUI.Properties {
         internal static string resx_injectionSuccess {
             get {
                 return ResourceManager.GetString("resx_injectionSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a process.
+        /// </summary>
+        internal static string resx_selectProcessPrompt {
+            get {
+                return ResourceManager.GetString("resx_selectProcessPrompt", resourceCulture);
             }
         }
         

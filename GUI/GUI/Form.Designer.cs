@@ -49,9 +49,9 @@
             this.panel1.Controls.Add(this.SearchProcessesTextBox);
             this.panel1.Controls.Add(this.InjectionStatusLabel);
             this.panel1.Controls.Add(this.InjectButton);
-            this.panel1.Location = new System.Drawing.Point(217, 225);
+            this.panel1.Location = new System.Drawing.Point(435, 225);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(221, 212);
+            this.panel1.Size = new System.Drawing.Size(223, 212);
             this.panel1.TabIndex = 0;
             // 
             // SearchProcessesTextBox
@@ -67,21 +67,22 @@
             // InjectionStatusLabel
             // 
             this.InjectionStatusLabel.AutoSize = true;
+            this.InjectionStatusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.InjectionStatusLabel.ForeColor = System.Drawing.Color.Red;
             this.InjectionStatusLabel.Location = new System.Drawing.Point(15, 185);
             this.InjectionStatusLabel.Name = "InjectionStatusLabel";
-            this.InjectionStatusLabel.Size = new System.Drawing.Size(48, 17);
+            this.InjectionStatusLabel.Size = new System.Drawing.Size(0, 20);
             this.InjectionStatusLabel.TabIndex = 3;
-            this.InjectionStatusLabel.Text = "Status";
             // 
             // InjectButton
             // 
+            this.InjectButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.InjectButton.Location = new System.Drawing.Point(12, 54);
             this.InjectButton.Name = "InjectButton";
             this.InjectButton.Size = new System.Drawing.Size(190, 30);
             this.InjectButton.TabIndex = 1;
             this.InjectButton.Text = "Inject!";
-            this.InjectButton.UseVisualStyleBackColor = true;
+            this.InjectButton.UseVisualStyleBackColor = false;
             this.InjectButton.Click += new System.EventHandler(this.InjectButton_Click);
             // 
             // ProcessListBox
@@ -91,55 +92,60 @@
             this.ProcessListBox.ItemHeight = 16;
             this.ProcessListBox.Location = new System.Drawing.Point(16, 225);
             this.ProcessListBox.Name = "ProcessListBox";
-            this.ProcessListBox.Size = new System.Drawing.Size(98, 212);
+            this.ProcessListBox.Size = new System.Drawing.Size(257, 212);
             this.ProcessListBox.TabIndex = 1;
             this.ProcessListBox.SelectedIndexChanged += new System.EventHandler(this.ProcessListBox_SelectedIndexChanged);
             // 
             // SelectDllButton
             // 
-            this.SelectDllButton.Location = new System.Drawing.Point(229, 178);
+            this.SelectDllButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.SelectDllButton.Location = new System.Drawing.Point(447, 184);
             this.SelectDllButton.Name = "SelectDllButton";
             this.SelectDllButton.Size = new System.Drawing.Size(196, 28);
             this.SelectDllButton.TabIndex = 2;
             this.SelectDllButton.Text = "Select a DLL";
-            this.SelectDllButton.UseVisualStyleBackColor = true;
+            this.SelectDllButton.UseVisualStyleBackColor = false;
             this.SelectDllButton.Click += new System.EventHandler(this.selectDllButton_Click);
             // 
             // InjectingLabel
             // 
             this.InjectingLabel.AutoSize = true;
-            this.InjectingLabel.ForeColor = System.Drawing.Color.Red;
+            this.InjectingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InjectingLabel.ForeColor = System.Drawing.Color.DarkGreen;
             this.InjectingLabel.Location = new System.Drawing.Point(13, 28);
             this.InjectingLabel.Name = "InjectingLabel";
-            this.InjectingLabel.Size = new System.Drawing.Size(60, 17);
+            this.InjectingLabel.Size = new System.Drawing.Size(80, 24);
             this.InjectingLabel.TabIndex = 3;
             this.InjectingLabel.Text = "Injecting";
             // 
             // IntoProcessLabel
             // 
             this.IntoProcessLabel.AutoSize = true;
-            this.IntoProcessLabel.ForeColor = System.Drawing.Color.Red;
+            this.IntoProcessLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.IntoProcessLabel.ForeColor = System.Drawing.Color.DarkGreen;
             this.IntoProcessLabel.Location = new System.Drawing.Point(13, 69);
             this.IntoProcessLabel.Name = "IntoProcessLabel";
-            this.IntoProcessLabel.Size = new System.Drawing.Size(86, 17);
+            this.IntoProcessLabel.Size = new System.Drawing.Size(103, 20);
             this.IntoProcessLabel.TabIndex = 4;
             this.IntoProcessLabel.Text = "Into Process";
             // 
             // ProcessesLabel
             // 
             this.ProcessesLabel.AutoSize = true;
+            this.ProcessesLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ProcessesLabel.Location = new System.Drawing.Point(13, 184);
             this.ProcessesLabel.Name = "ProcessesLabel";
-            this.ProcessesLabel.Size = new System.Drawing.Size(74, 17);
+            this.ProcessesLabel.Size = new System.Drawing.Size(89, 20);
             this.ProcessesLabel.TabIndex = 5;
             this.ProcessesLabel.Text = "Processes";
             // 
             // PIDLabel
             // 
             this.PIDLabel.AutoSize = true;
-            this.PIDLabel.Location = new System.Drawing.Point(150, 184);
+            this.PIDLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PIDLabel.Location = new System.Drawing.Point(308, 184);
             this.PIDLabel.Name = "PIDLabel";
-            this.PIDLabel.Size = new System.Drawing.Size(37, 17);
+            this.PIDLabel.Size = new System.Drawing.Size(46, 20);
             this.PIDLabel.TabIndex = 6;
             this.PIDLabel.Text = "PIDs";
             // 
@@ -147,27 +153,29 @@
             // 
             this.PidListBox.FormattingEnabled = true;
             this.PidListBox.ItemHeight = 16;
-            this.PidListBox.Location = new System.Drawing.Point(133, 225);
+            this.PidListBox.Location = new System.Drawing.Point(294, 225);
             this.PidListBox.Name = "PidListBox";
-            this.PidListBox.Size = new System.Drawing.Size(69, 212);
+            this.PidListBox.Size = new System.Drawing.Size(135, 212);
             this.PidListBox.TabIndex = 7;
             this.PidListBox.SelectedIndexChanged += new System.EventHandler(this.PidListBox_SelectedIndexChanged);
             // 
             // SelectDllLabel
             // 
             this.SelectDllLabel.AutoSize = true;
+            this.SelectDllLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SelectDllLabel.Location = new System.Drawing.Point(130, 28);
             this.SelectDllLabel.Name = "SelectDllLabel";
-            this.SelectDllLabel.Size = new System.Drawing.Size(118, 17);
+            this.SelectDllLabel.Size = new System.Drawing.Size(142, 20);
             this.SelectDllLabel.TabIndex = 8;
             this.SelectDllLabel.Text = "No DLL Specified";
             // 
             // SelectProcessLabel
             // 
             this.SelectProcessLabel.AutoSize = true;
+            this.SelectProcessLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SelectProcessLabel.Location = new System.Drawing.Point(133, 69);
             this.SelectProcessLabel.Name = "SelectProcessLabel";
-            this.SelectProcessLabel.Size = new System.Drawing.Size(140, 17);
+            this.SelectProcessLabel.Size = new System.Drawing.Size(167, 20);
             this.SelectProcessLabel.TabIndex = 9;
             this.SelectProcessLabel.Text = "No Process Selected";
             // 
@@ -175,7 +183,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(450, 449);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(686, 449);
             this.Controls.Add(this.SelectProcessLabel);
             this.Controls.Add(this.SelectDllLabel);
             this.Controls.Add(this.PidListBox);

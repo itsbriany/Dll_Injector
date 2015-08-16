@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using GUI.Properties;
 
@@ -125,6 +126,20 @@ namespace GUI
 
         private void InjectButton_Click(object sender, EventArgs e)
         {
+            InjectionStatusLabel.ForeColor = Color.Red;
+
+            if (_selectedProcess == 0)
+            {
+                InjectionStatusLabel.Text = Resources.resx_selectProcessPrompt;
+                return;
+            }
+
+            if (_dllPath == null)
+            {
+                InjectionStatusLabel.Text = Resources.resx_dllSelectionPrompt;
+                return;
+            }
+
             if (Injector.InjectDll(true, _selectedProcess, _dllPath))
             {
                 InjectionStatusLabel.Text = Resources.resx_injectionSuccess;
@@ -133,7 +148,7 @@ namespace GUI
                 return;
             }
             InjectionStatusLabel.Text = Resources.resx_injectionFailed;
-            InjectionStatusLabel.ForeColor = Color.Red;
+            
         }
 
         private void SearchProcessesTextBox_Enter(object sender, EventArgs e)
